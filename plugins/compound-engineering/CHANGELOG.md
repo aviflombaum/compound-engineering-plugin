@@ -5,6 +5,26 @@ All notable changes to the compound-engineering plugin will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.28.1] - 2026-01-25
+
+### Added
+
+- **Version bump enforcement tooling** - Scripts and CI for atomic version management
+  - `scripts/bump-version.sh` - Bump versions in both `plugin.json` and `marketplace.json` atomically
+  - `scripts/validate-versions.sh` - Validate version consistency across files
+  - `scripts/setup-local-dev.sh` - Configure Claude Code for local plugin development
+  - GitHub Actions workflow that validates versions on PRs and comments with fix instructions
+
+### Changed
+
+- **Auto-rebuild on plugin update** - `/compound:configure` now triggers automatic rebuild when plugin updates
+
+### Summary
+
+- 28 agents, 24 commands, 15 skills, 1 MCP server
+
+---
+
 ## [2.28.0] - 2026-01-25
 
 ### Added
