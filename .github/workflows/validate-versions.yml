@@ -1,0 +1,68 @@
+name: Validate Plugin Versions
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'plugins/**'
+      - '.claude-plugin/marketplace.json'
+  push:
+    branches: [main]
+    paths:
+      - 'plugins/**'
+      - '.claude-plugin/marketplace.json'
+
+jobs:
+  validate:
+    name: Check version consistency
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Need full history for branch comparison
+
+      - name: Validate plugin versions
+        run: |
+          # For PRs, compare against the base branch
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE_BRANCH="${{ github.base_ref }}"
+          else
+            BASE_BRANCH="main"
+          fi
+
+          chmod +x ./scripts/validate-versions.sh
+          ./scripts/validate-versions.sh "$BASE_BRANCH"
+
+      - name: Comment on PR if validation fails
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## Plugin Version Validation Failed
+
+            Plugin files were modified but versions may not have been bumped, or there's a version mismatch between files.
+
+            ### How to Fix
+
+            **Bump the version:**
+            \`\`\`bash
+            ./scripts/bump-version.sh <plugin-name> patch
+            \`\`\`
+
+            This updates both \`plugin.json\` and \`marketplace.json\` atomically.
+
+            **Verify locally:**
+            \`\`\`bash
+            ./scripts/validate-versions.sh
+            \`\`\`
+
+            ### Why This Matters
+
+            Claude Code detects updates by comparing \`version\` in \`plugin.json\`. If you don't bump the version, users won't receive your changes via auto-update.`
+            })

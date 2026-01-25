@@ -8,11 +8,19 @@ This repository is a Claude Code plugin marketplace that distributes the `compou
 every-marketplace/
 ├── .claude-plugin/
 │   └── marketplace.json          # Marketplace catalog (lists available plugins)
+├── .github/
+│   └── workflows/
+│       ├── deploy-docs.yml       # GitHub Pages deployment
+│       └── validate-versions.yml # CI validation for version bumps
 ├── docs/                         # Documentation site (GitHub Pages)
 │   ├── index.html                # Landing page
 │   ├── css/                      # Stylesheets
 │   ├── js/                       # JavaScript
 │   └── pages/                    # Reference pages
+├── scripts/                      # Development tooling
+│   ├── bump-version.sh           # Atomic version bumps
+│   ├── validate-versions.sh      # Version consistency checks
+│   └── setup-local-dev.sh        # Configure local development
 └── plugins/
     └── compound-engineering/   # The actual plugin
         ├── .claude-plugin/
@@ -79,12 +87,17 @@ The description appears in multiple places and must match everywhere:
 
 Format: `"Includes X specialized agents, Y commands, and Z skill(s)."`
 
-#### 3. Update version numbers
+#### 3. Bump version numbers
 
-When adding new functionality, bump the version in:
+Use the version bump script to update both files atomically:
 
-- [ ] `plugins/compound-engineering/.claude-plugin/plugin.json` → `version`
-- [ ] `.claude-plugin/marketplace.json` → plugin `version`
+```bash
+./scripts/bump-version.sh compound-engineering patch   # 2.28.0 -> 2.28.1
+./scripts/bump-version.sh compound-engineering minor   # 2.28.0 -> 2.29.0
+./scripts/bump-version.sh compound-engineering major   # 2.28.0 -> 3.0.0
+```
+
+This updates both `plugin.json` and `marketplace.json` in one command.
 
 #### 4. Update documentation
 
@@ -106,19 +119,23 @@ This will:
 - Update the changelog page
 - Validate all counts match actual files
 
-#### 6. Validate JSON files
+#### 6. Validate before committing
+
+Run the validation script to check version consistency:
+
+```bash
+./scripts/validate-versions.sh
+```
+
+This checks:
+- Versions match between `plugin.json` and `marketplace.json`
+- If plugin files changed, version was bumped
+
+Also validate JSON syntax:
 
 ```bash
 cat .claude-plugin/marketplace.json | jq .
 cat plugins/compound-engineering/.claude-plugin/plugin.json | jq .
-```
-
-#### 6. Verify before committing
-
-```bash
-# Ensure counts in descriptions match actual files
-grep -o "Includes [0-9]* specialized agents" plugins/compound-engineering/.claude-plugin/plugin.json
-ls plugins/compound-engineering/agents/*.md | wc -l
 ```
 
 ### Marketplace.json Structure
@@ -256,33 +273,37 @@ python -m http.server 8000
 
 ## Testing Changes
 
-### Test Locally
+### Local Development Setup
 
-1. Install the marketplace locally:
-
-   ```bash
-   claude /plugin marketplace add /Users/yourusername/every-marketplace
-   ```
-
-2. Install the plugin:
-
-   ```bash
-   claude /plugin install compound-engineering
-   ```
-
-3. Test agents and commands:
-   ```bash
-   claude /review
-   claude agent kieran-rails-reviewer "test message"
-   ```
-
-### Validate JSON
-
-Before committing, ensure JSON files are valid:
+Run the setup script to configure Claude Code to load from your local directory:
 
 ```bash
-cat .claude-plugin/marketplace.json | jq .
-cat plugins/compound-engineering/.claude-plugin/plugin.json | jq .
+./scripts/setup-local-dev.sh
+```
+
+This configures:
+1. `~/.claude/plugins/known_marketplaces.json` to use local directory source
+2. `.claude/settings.local.json` with all plugins enabled
+
+After setup:
+1. Start a new Claude Code session in this directory
+2. Run `/plugins` to verify all plugins are loaded
+3. Changes to plugin files will be reflected immediately
+
+### Test Agents and Commands
+
+```bash
+claude /review
+claude agent kieran-rails-reviewer "test message"
+```
+
+### Revert to GitHub Source
+
+To switch back to loading from GitHub:
+
+```bash
+# Edit ~/.claude/plugins/known_marketplaces.json
+# Change "directory" back to "github" with repo: kieranklaassen/compound-engineering-plugin
 ```
 
 ## Common Tasks
@@ -378,3 +399,14 @@ The initial marketplace.json included many custom fields (downloads, stars, rati
 - Plugin entries: `name`, `description`, `version`, `author`, `homepage`, `tags`, `source`
 
 **Learning:** Stick to the official spec. Custom fields may confuse users or break compatibility with future versions.
+
+### 2026-01-25: Added version bump enforcement tooling
+
+Added three scripts to automate version management:
+- `scripts/bump-version.sh` - Atomic version bumps to both plugin.json and marketplace.json
+- `scripts/validate-versions.sh` - CI validation for version consistency
+- `scripts/setup-local-dev.sh` - Configure local development
+
+Also added GitHub Actions workflow that validates versions on PRs and comments with fix instructions if validation fails.
+
+**Learning:** Claude Code detects updates by comparing `version` in `plugin.json`. Without version bumps, users won't receive changes via auto-update. Automating version management prevents forgotten bumps and mismatched versions between files.
