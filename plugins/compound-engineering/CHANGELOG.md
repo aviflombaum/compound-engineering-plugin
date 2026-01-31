@@ -5,6 +5,29 @@ All notable changes to the compound-engineering plugin will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.29.0] - 2026-01-30
+
+### Added
+
+- **`learnings-researcher` agent** - Searches docs/solutions/ for relevant past learnings
+- **`brainstorm` command** - New brainstorming workflow command (`/workflows:brainstorm`)
+- **`brainstorming` skill** - Comprehensive brainstorming methodology and templates
+
+### Changed
+
+- **Research agents** - Updated best-practices-researcher, framework-docs-researcher, repo-research-analyst
+- **Review agents** - Updated pattern-recognition-specialist
+- **Workflow commands** - Updated plan, review, work, compound commands
+- **Utility commands** - Updated deepen-plan, report-bug
+- **Skills** - Updated compound-docs (SKILL + assets), git-worktree
+
+### Summary
+
+- 29 agents, 25 commands, 16 skills, 1 MCP server
+- Synced from upstream EveryInc/compound-engineering-plugin
+
+---
+
 ## [2.28.1] - 2026-01-25
 
 ### Added

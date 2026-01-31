@@ -6,14 +6,14 @@ AI-powered development tools that get smarter with every use. Make each unit of 
 
 | Component | Count |
 |-----------|-------|
-| Agents | 28 |
-| Commands | 24 |
-| Skills | 15 |
+| Agents | 29 |
+| Commands | 25 |
+| Skills | 16 |
 | MCP Servers | 1 |
 
 ## Quick Start: Customize Your Installation
 
-By default, all 68 components load into your context. To reduce context usage and only load what you need:
+By default, all 71 components load into your context. To reduce context usage and only load what you need:
 
 ```
 /compound:configure
@@ -50,13 +50,14 @@ Agents are organized into categories for easier discovery.
 | `security-sentinel` | Security audits and vulnerability assessments |
 | `julik-frontend-races-reviewer` | Review JavaScript/Stimulus code for race conditions |
 
-### Research (4)
+### Research (5)
 
 | Agent | Description |
 |-------|-------------|
 | `best-practices-researcher` | Gather external best practices and examples |
 | `framework-docs-researcher` | Research framework documentation and best practices |
 | `git-history-analyzer` | Analyze git history and code evolution |
+| `learnings-researcher` | Search docs/solutions/ for relevant past learnings |
 | `repo-research-analyst` | Research repository structure and conventions |
 
 ### Design (3)
@@ -92,6 +93,7 @@ Core workflow commands use `workflows:` prefix to avoid collisions with built-in
 
 | Command | Description |
 |---------|-------------|
+| `/workflows:brainstorm` | Generate and explore ideas systematically |
 | `/workflows:plan` | Create implementation plans |
 | `/workflows:review` | Run comprehensive code reviews |
 | `/workflows:work` | Execute work items systematically |
@@ -125,6 +127,7 @@ Core workflow commands use `workflows:` prefix to avoid collisions with built-in
 | Skill | Description |
 |-------|-------------|
 | `agent-native-architecture` | Build AI agents using prompt-native architecture |
+| `brainstorming` | Comprehensive brainstorming methodology and templates |
 
 ### Development Tools
 
